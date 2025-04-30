@@ -1,0 +1,23 @@
+<!-- layout/notifications.html -->
+<div th:fragment="notificationList">
+    <div id="notificationPanel" class="notification-slide hidden">
+        <div class="notification-header">
+            <h3>알림</h3>
+            <button class="close-btn" onclick="closeNotificationPanel()">✕</button>
+        </div>
+
+        <ul class="notification-list">
+            <li th:each="noti : ${notifications}"
+                class="notification-item"
+                th:data-id="${noti.id}"
+                th:data-href="@{/post/{id}(id=${noti.postId}) + ${noti.anchor}}">
+                <a href="javascript:void(0)" style="text-decoration: none; color: inherit;">
+                    <span th:text="${noti.message}">알림 내용</span><br/>
+                    <span th:text="${#temporals.format(noti.createdAt, 'yyyy.MM.dd HH:mm')}" style="font-size: 12px; color: gray;">시간</span>
+                    <span th:if="${!noti.read}" style="color: red; font-weight: bold; margin-left: 10px;">●</span>
+                </a>
+            </li>
+
+        </ul>
+    </div>
+</div>
