@@ -1,5 +1,6 @@
 package com.example.sns.UserProfiles.controller;
 
+<<<<<<< HEAD
 import com.example.sns.User.DTO.UserResponseDTO;
 import com.example.sns.User.entity.User;
 import com.example.sns.User.repository.UserRepository;
@@ -9,6 +10,14 @@ import com.example.sns.UserProfiles.Service.ProfileService;
 import com.example.sns.UserProfiles.entity.Profile;
 import com.example.sns.UserProfiles.repository.ProfileRepository;
 import com.example.sns.config.SecurityUtils;
+=======
+import com.example.sns.UserProfiles.DTO.ProfileUpdateRequest;
+import com.example.sns.UserProfiles.Gender;
+import com.example.sns.UserProfiles.Service.ProfileService;
+import com.example.sns.UserProfiles.repository.ProfileRepository;
+import com.example.sns.User.repository.UserRepository;
+import com.example.sns.config.Security.SecurityUtils;
+>>>>>>> 2276687 (초기 커밋)
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,8 +27,11 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+<<<<<<< HEAD
 import java.util.Optional;
 
+=======
+>>>>>>> 2276687 (초기 커밋)
 // 프로필 관련 요청을 처리하는 컨트롤러
 @Controller
 @RequestMapping("/profile")

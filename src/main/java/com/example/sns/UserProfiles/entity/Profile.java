@@ -1,7 +1,12 @@
 package com.example.sns.UserProfiles.entity;
 
+<<<<<<< HEAD
 import com.example.sns.User.entity.User;
 import com.example.sns.UserProfiles.Gender;
+=======
+import com.example.sns.UserProfiles.Gender;
+import com.example.sns.User.entity.User;
+>>>>>>> 2276687 (초기 커밋)
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;

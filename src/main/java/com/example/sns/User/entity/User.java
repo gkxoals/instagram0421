@@ -1,6 +1,9 @@
 package com.example.sns.User.entity;
 
+<<<<<<< HEAD
 import com.example.sns.UserProfiles.entity.Profile;
+=======
+>>>>>>> 2276687 (초기 커밋)
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;

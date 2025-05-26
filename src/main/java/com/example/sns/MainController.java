@@ -6,7 +6,10 @@ import com.example.sns.User.repository.UserRepository;
 import com.example.sns.UserProfiles.entity.Profile;
 import com.example.sns.UserProfiles.repository.ProfileRepository;
 import com.example.sns.post.DTO.PostDTO;
+<<<<<<< HEAD
 import com.example.sns.post.entity.Post;
+=======
+>>>>>>> 2276687 (초기 커밋)
 import com.example.sns.post.service.PostService;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;

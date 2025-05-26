@@ -53,10 +53,17 @@ public class PostController {
     @PostMapping("")
     public ResponseEntity<String> uploadPost(@AuthenticationPrincipal CustomUserDetails customUserDetails,
                                              @RequestParam("content") String content,
+<<<<<<< HEAD
                                              @RequestParam("image") MultipartFile imageFile) {
         try {
             Long userId = customUserDetails.getUser().getUserId();
             postService.savePost(userId, content, imageFile);
+=======
+                                             @RequestParam("mediaFiles") List<MultipartFile> mediaFiles) {
+        try {
+            Long userId = customUserDetails.getUser().getUserId();
+            postService.savePost(userId, content, mediaFiles);
+>>>>>>> 2276687 (초기 커밋)
             return ResponseEntity.ok("업로드 성공");
         } catch (Exception e) {
             e.printStackTrace();
@@ -75,11 +82,20 @@ public class PostController {
     @PostMapping("/edit/{id}")
     public String updatePost(@PathVariable Long id,
                              @RequestParam String content,
+<<<<<<< HEAD
                              @RequestParam(value = "image", required = false) MultipartFile imageFile) throws IOException {
         postService.updatePost(id, content, imageFile);
         return "redirect:/";
     }
 
+=======
+                             @RequestParam(value = "mediaFiles", required = false) List<MultipartFile> mediaFiles) throws IOException {
+        postService.updatePost(id, content, mediaFiles != null ? mediaFiles : List.of());
+        return "redirect:/";
+    }
+
+
+>>>>>>> 2276687 (초기 커밋)
     @PostMapping("/delete/{id}")
     public String deletePost(@PathVariable Long id) {
         postService.deletePost(id);

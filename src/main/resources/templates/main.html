@@ -16,7 +16,10 @@
 <div th:replace="layout/notifications :: notificationList"></div>
 
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 2276687 (초기 커밋)
 <main class="main-feed">
     <div class="post-container">
         <p>추천 게시물</p>
@@ -36,10 +39,40 @@
                 </div>
             </div>
 
+<<<<<<< HEAD
             <div th:if="${post.imageUrl != null}">
                 <img th:src="${post.imageUrl}" alt="게시물 이미지" class="post-image"/>
             </div>
 
+=======
+            <div class="carousel-container">
+                <div class="carousel-track" th:attr="id='carousel-track-' + ${post.id}">
+                    <div class="carousel-slide"
+                         th:each="media, iterStat : ${post.mediaList}"
+                         th:classappend="${iterStat.index == 0} ? ' active-slide' : ''">
+                        <img th:if="${media.mediaType == 'IMAGE'}" th:src="${media.filePath}" />
+                        <video th:if="${media.mediaType == 'VIDEO'}" th:src="${media.filePath}" controls></video>
+                    </div>
+                </div>
+
+                <div class="carousel-controls"
+                     th:if="${#lists.size(post.mediaList) > 1}">
+                    <button type="button" th:attr="onclick='moveSlide(-1, ' + ${post.id} + ')'">←</button>
+                    <button type="button" th:attr="onclick='moveSlide(1, ' + ${post.id} + ')'">→</button>
+                </div>
+
+                <div class="carousel-indicators"
+                     th:if="${#lists.size(post.mediaList) > 1}"
+                     th:attr="id='carousel-indicators-' + ${post.id}">
+                    <span th:each="media, iterStat : ${post.mediaList}"
+                    th:attr="class=${iterStat.index == 0} ? 'active' : ''"
+                    th:attrappend="onclick='goToSlide(' + ${post.id} + ', ' + ${iterStat.index} + ')'"></span>
+                </div>
+
+            </div>
+
+
+>>>>>>> 2276687 (초기 커밋)
             <p th:text="${post.content}"></p>
             <p class="post-date" th:text="${#temporals.format(post.createdAt, 'yyyy.MM.dd HH:mm')}"></p>
 
@@ -56,7 +89,11 @@
                     <div class="comment-list">
 
                         <div th:each="comment : ${post.comments}" th:if="${comment.parentId == null}"
+<<<<<<< HEAD
                              class="comment-item"  th:id="'comment-' + ${comment.id}">
+=======
+                             class="comment-item" th:id="'comment-' + ${comment.id}">
+>>>>>>> 2276687 (초기 커밋)
                             <!-- ✅ 삭제 버튼과 내용을 같은 줄에 배치 -->
                             <div class="comment-content-wrapper">
                                 <div>
@@ -77,7 +114,11 @@
 
                             <form action="/comment/reply" method="post" class="reply-form">
 
+<<<<<<< HEAD
                                     <input type="hidden" name="parentId" th:value="${comment.id}"/>
+=======
+                                <input type="hidden" name="parentId" th:value="${comment.id}"/>
+>>>>>>> 2276687 (초기 커밋)
 
                                 <div class="input-wrapper">
                                     <input type="text" name="content" placeholder="답글 입력..." required/>
@@ -101,8 +142,15 @@
                                              th:if="${loggedInUser != null and
               (loggedInUser.userId == reply.userId or
                loggedInUser.userId == post.user.id)}">
+<<<<<<< HEAD
                                             <form th:action="@{/comment/delete/{id}(id=${reply.id})}" method="post" style="display:inline;">
                                                 <button type="submit" onclick="return confirm('답글을 삭제하시겠습니까?')">삭제</button>
+=======
+                                            <form th:action="@{/comment/delete/{id}(id=${reply.id})}" method="post"
+                                                  style="display:inline;">
+                                                <button type="submit" onclick="return confirm('답글을 삭제하시겠습니까?')">삭제
+                                                </button>
+>>>>>>> 2276687 (초기 커밋)
                                             </form>
                                         </div>
                                     </div>

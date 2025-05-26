@@ -14,10 +14,31 @@
                 <label for="content">내용</label>
                 <textarea id="content" name="content" th:text="${post.content}" required></textarea>
             </div>
+<<<<<<< HEAD
             <div class="form-group">
                 <label for="image">이미지</label>
                 <input type="file" id="image" name="image" accept="image/*">
             </div>
+=======
+
+            <!-- 기존 업로드된 미디어 표시 -->
+            <div class="form-group">
+                <label>기존 미디어</label>
+                <div class="media-preview">
+                    <div th:each="media : ${post.mediaList}">
+                        <img th:if="${media.mediaType == 'IMAGE'}" th:src="${media.filePath}" style="width: 100px; margin: 5px;" />
+                        <video th:if="${media.mediaType == 'VIDEO'}" th:src="${media.filePath}" controls style="width: 150px; margin: 5px;"></video>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 새 미디어 업로드 -->
+            <div class="form-group">
+                <label for="mediaFiles">새 이미지/영상 업로드</label>
+                <input type="file" id="mediaFiles" name="mediaFiles" accept="image/*,video/*" multiple>
+            </div>
+
+>>>>>>> 2276687 (초기 커밋)
             <button type="submit" class="submit-btn">수정 완료</button>
         </form>
     </div>

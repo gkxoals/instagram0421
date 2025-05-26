@@ -1,11 +1,20 @@
 package com.example.sns.UserProfiles.Service;
 
+<<<<<<< HEAD
 import com.example.sns.User.entity.User;
 import com.example.sns.User.repository.UserRepository;
 import com.example.sns.UserProfiles.DTO.ProfileUpdateRequest;
 import com.example.sns.UserProfiles.entity.Profile;
 import com.example.sns.UserProfiles.repository.ProfileRepository;
 import com.example.sns.UserProfiles.Img.ImageUtil;
+=======
+import com.example.sns.UserProfiles.DTO.ProfileUpdateRequest;
+import com.example.sns.UserProfiles.Img.ImageUtil;
+import com.example.sns.UserProfiles.repository.ProfileRepository;
+import com.example.sns.User.entity.User;
+import com.example.sns.User.repository.UserRepository;
+import com.example.sns.UserProfiles.entity.Profile;
+>>>>>>> 2276687 (초기 커밋)
 import com.example.sns.exception.ResourceNotFoundException;
 import org.apache.commons.io.FilenameUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +32,14 @@ import java.util.UUID;
 @Service
 public class ProfileService {
 
+<<<<<<< HEAD
     private static final String UPLOAD_DIR = "C:/Users/User/Desktop/sns_2/profileImage/"; // 노트북 경로는 달라서 따로 제작 ㄱㄱ
+=======
+    //학원
+    private static final String UPLOAD_DIR = "C:/Users/User/Desktop/sns_2/profileImage/";
+//    //노트북
+//    private static final String UPLOAD_DIR = "C:/Users/하태민/OneDrive/바탕 화면/sns_2/profileImage/";
+>>>>>>> 2276687 (초기 커밋)
 
     private final ProfileRepository profileRepository;
     private final UserRepository userRepository;
@@ -71,6 +87,7 @@ public class ProfileService {
         });
 
         if (dto.getNickname() != null && !dto.getNickname().trim().isEmpty()) {
+<<<<<<< HEAD
             boolean exists = profileRepository.existsByNickname(dto.getNickname());
             if (exists) {
                 throw new IllegalArgumentException("이미 사용 중인 닉네임입니다.");
@@ -79,6 +96,18 @@ public class ProfileService {
             profile.setNickname(dto.getNickname());
         }
 
+=======
+            if (!dto.getNickname().equals(profile.getNickname())) {
+                boolean exists = profileRepository.existsByNickname(dto.getNickname());
+                if (exists) {
+                    throw new IllegalArgumentException("이미 사용 중인 닉네임입니다.");
+                }
+                profile.setNickname(dto.getNickname());
+            }
+        }
+
+
+>>>>>>> 2276687 (초기 커밋)
         if (dto.getBio() != null) {
             profile.setBio(dto.getBio());
         }
@@ -162,6 +191,7 @@ public class ProfileService {
      * @param imagePath 삭제할 이미지 파일 경로
      */
     private void deleteProfileImageFile(String imagePath) {
+<<<<<<< HEAD
         if (imagePath == null || imagePath.isEmpty()) {
             return;
         }
@@ -170,6 +200,20 @@ public class ProfileService {
         File file = new File(fullPath);
 
         // 파일이 존재하면 삭제
+=======
+        if (imagePath == null || imagePath.isEmpty()) return;
+
+        // ✅ 기본 이미지라면 삭제하지 않음
+        if (imagePath.contains("default-profile.png")) {
+            System.out.println("기본 이미지는 삭제하지 않습니다.");
+            return;
+        }
+
+        String filename = Paths.get(imagePath).getFileName().toString();
+        String fullPath = UPLOAD_DIR + filename;
+        File file = new File(fullPath);
+
+>>>>>>> 2276687 (초기 커밋)
         if (file.exists() && file.delete()) {
             System.out.println("이미지 삭제 성공: " + fullPath);
         } else {
@@ -177,6 +221,10 @@ public class ProfileService {
         }
     }
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> 2276687 (초기 커밋)
     public String saveProfileImage(MultipartFile file) throws IOException {
         if (file.isEmpty()) {
             return "default.png";

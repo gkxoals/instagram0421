@@ -1,6 +1,10 @@
 package com.example.sns.like.controller;
 
+<<<<<<< HEAD
 import com.example.sns.config.SecurityUtils;
+=======
+import com.example.sns.config.Security.SecurityUtils;
+>>>>>>> 2276687 (초기 커밋)
 import com.example.sns.like.DTO.LikeRequestDTO;
 import com.example.sns.like.DTO.LikeResponseDTO;
 import com.example.sns.like.service.LikeService;

@@ -42,6 +42,13 @@ dependencies {
 
 	implementation 'org.springframework.boot:spring-boot-starter-validation'
 	implementation 'commons-io:commons-io:2.14.0'
+<<<<<<< HEAD
+=======
+
+	// WebSocket 지원
+	implementation 'org.springframework.boot:spring-boot-starter-websocket'
+	implementation 'com.fasterxml.jackson.core:jackson-databind'
+>>>>>>> 2276687 (초기 커밋)
 }
 
 tasks.named('test') {

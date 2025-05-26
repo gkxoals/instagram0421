@@ -1,6 +1,10 @@
 package com.example.sns.User.service;
 
 import com.example.sns.User.DTO.UserDTO;
+<<<<<<< HEAD
+=======
+import com.example.sns.User.DTO.UserListDTO;
+>>>>>>> 2276687 (초기 커밋)
 import com.example.sns.User.DTO.UserResponseDTO;
 import com.example.sns.User.entity.Role;
 import com.example.sns.User.entity.User;
@@ -11,13 +15,24 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+<<<<<<< HEAD
+=======
+import java.util.List;
+import java.util.stream.Collectors;
+
+>>>>>>> 2276687 (초기 커밋)
 @Service
 @RequiredArgsConstructor // Lombok을 사용하여 생성자 주입 자동화
 public class
 UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder; // Spring Security 의 비밀번호 암호화 기능
+<<<<<<< HEAD
     private  final ProfileRepository profileRepository;
+=======
+    private final ProfileRepository profileRepository;
+
+>>>>>>> 2276687 (초기 커밋)
     // 회원가입 기능
     public UserResponseDTO create(UserDTO userDTO) {
         if (userRepository.existsByEmail(userDTO.getEmail())) {
@@ -38,11 +53,19 @@ UserService {
             user.setRole(Role.ROLE_USER);
         }
 
+<<<<<<< HEAD
         user= userRepository.save(user);
 
         String generatedNickname;
         do {
             generatedNickname = "User" + (int)(Math.random() * 10_000);
+=======
+        user = userRepository.save(user);
+
+        String generatedNickname;
+        do {
+            generatedNickname = "User" + (int) (Math.random() * 10_000);
+>>>>>>> 2276687 (초기 커밋)
         } while (profileRepository.existsByNickname(generatedNickname));
 
         Profile profile = new Profile();
@@ -54,6 +77,7 @@ UserService {
         return new UserResponseDTO(user.getUserId(), user.getName(), user.getPhone(), user.getEmail(), user.getProfileImage());
     }
 
+<<<<<<< HEAD
 public String getProfileImageByUserId(Long userId) {
     return userRepository.findById(userId)
             .flatMap(user -> profileRepository.findByUserId(user)
@@ -66,6 +90,19 @@ public String getProfileImageByUserId(Long userId) {
             .orElse("/images/default-profile.png");
 }
 
+=======
+    public String getProfileImageByUserId(Long userId) {
+        return userRepository.findById(userId)
+                .flatMap(user -> profileRepository.findByUserId(user)
+                        .map(profile -> {
+                            String profileImage = profile.getProfileImage();
+                            return (profileImage != null && !profileImage.isEmpty())
+                                    ? profileImage
+                                    : "/images/default-profile.png";
+                        }))
+                .orElse("/images/default-profile.png");
+    }
+>>>>>>> 2276687 (초기 커밋)
 
 
     public User findByEmail(String email) {
@@ -85,4 +122,36 @@ public String getProfileImageByUserId(Long userId) {
         );
     }
 
+<<<<<<< HEAD
+=======
+    public List<UserListDTO> getAllExcept(Long excludeId) {
+        return userRepository.findAll().stream()
+                .filter(user -> !user.getUserId().equals(excludeId))
+                .map(this::convertToUserListDTO)
+                .collect(Collectors.toList());
+    }
+
+    private UserListDTO convertToUserListDTO(User user) {
+        Profile profile = profileRepository.findByUserId(user).orElse(null);
+
+        String nickname = (profile != null && profile.getNickname() != null && !profile.getNickname().isEmpty())
+                ? profile.getNickname()
+                : "알 수 없음";
+
+        String profileImage = (profile != null && profile.getProfileImage() != null && !profile.getProfileImage().isEmpty())
+                ? profile.getProfileImage()
+                : "/images/default-profile.png";
+
+        return new UserListDTO(
+                user.getUserId(),
+                nickname,
+                profileImage,
+                null, // roomId는 없음
+                null  // lastMessage도 없음
+        );
+    }
+
+
+
+>>>>>>> 2276687 (초기 커밋)
 }

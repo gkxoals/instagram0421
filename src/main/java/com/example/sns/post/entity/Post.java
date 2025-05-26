@@ -27,8 +27,15 @@ public class Post {
     @Column(nullable = false)
     private String content;
 
+<<<<<<< HEAD
     @Column(nullable = false, name = "image_url")
     private String imageUrl;
+=======
+    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OrderBy("uploadOrder ASC")
+    private List<PostMedia> mediaList = new ArrayList<>();
+
+>>>>>>> 2276687 (초기 커밋)
 
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt = LocalDateTime.now();
