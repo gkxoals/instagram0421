@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Instagram DM</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- ✅ CSS -->
+    <link rel="stylesheet" href="/css/dm/chat-room.css">
+    <link rel="stylesheet" href="/css/dm/dm-list.css">
+
+    <!-- ✅ JS -->
+    <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/stompjs@2.3.3/lib/stomp.min.js"></script>
+    <script src="/js/chat-room.js" defer></script>
+</head>
+<body th:attr="data-room-id=${roomId}, data-user-id=${userId}, data-nickname=${nickname}">
+<div class="dm-wrapper">
+
+    <!-- ✅ 좌측: 전체 유저 + 기존 채팅방 목록 -->
+    <div class="dm-user-list">
+        <div class="dm-header">메시지</div>
+
+        <!-- ✅ 전체 유저 리스트 (새로운 DM 시작용) -->
+        <div class="dm-section">
+            <div class="dm-section-title">전체 유저</div>
+            <ul class="dm-user-items">
+                <li th:each="user : ${allUsers}" class="dm-user-item">
+                    <a th:href="@{'/dm/start?targetId=' + ${user.userId}}">
+                        <img th:src="${user.profileImage}" class="dm-profile-img">
+                        <div class="dm-user-info">
+                            <div class="dm-nickname" th:text="${user.nickname}">닉네임</div>
+                        </div>
+                    </a>
+                </li>
+            </ul>
+        </div>
+
+        <!-- ✅ 기존 대화 목록 -->
+        <div class="dm-section">
+            <div class="dm-section-title">기존 대화</div>
+            <ul class="dm-user-items">
+                <li th:each="user : ${chatRooms}" class="dm-user-item">
+                    <a th:href="@{'/dm/users?roomId=' + ${user.roomId}}">
+                        <img th:src="${user.profileImage}" class="dm-profile-img">
+                        <div class="dm-user-info">
+                            <div class="dm-nickname" th:text="${user.nickname}">닉네임</div>
+                            <div class="dm-preview" th:text="${user.lastMessage}">최근 메시지</div>
+                        </div>
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- ✅ 우측: 채팅방 fragment 삽입 -->
+    <div th:replace="dm/layout/chat-room :: chatRoomFragment"></div>
+
+</div>
+</body>
+</html>

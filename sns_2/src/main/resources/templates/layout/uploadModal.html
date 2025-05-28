@@ -1,0 +1,44 @@
+<div th:fragment="uploadModal">
+    <div id="uploadModal" class="modal-bg hidden">
+        <div class="instagram-modal">
+
+            <!-- 왼쪽 이미지 or 업로드 안내 -->
+            <div class="image-preview-area" id="imageArea">
+                <div id="uploadPlaceholder">
+                    <div class="upload-icon">📷</div>
+                    <div class="upload-desc">사진과 동영상을 여기에 끌어다 놓으세요</div>
+                    <label for="imageUpload" class="file-select-btn">컴퓨터에서 선택</label>
+                </div>
+
+                <input type="file" id="imageUpload" name="mediaFiles" accept="image/*,video/*" multiple style="display: none;">
+
+                <div class="carousel-container hidden" id="carouselContainer">
+                    <div id="previewCarousel" class="carousel-track"></div>
+                    <div class="carousel-controls">
+                        <button type="button" id="prevSlide">←</button>
+                        <button type="button" id="nextSlide">→</button>
+                    </div>
+                    <div id="carouselIndicators" class="carousel-indicators"></div>
+                </div>
+
+
+            </div>
+
+
+            <!-- 오른쪽 글쓰기 영역 -->
+            <div class="right-panel">
+                <div class="top-bar">
+                    <button id="goToWriteStep" style="display: none;">다음</button>
+                </div>
+                <div id="uploadWriteStep" style="flex: 1; padding: 20px; display: none;">
+                    <form id="postForm" enctype="multipart/form-data">
+                        <textarea name="content" placeholder="내용을 입력하세요" required></textarea><br>
+                        <button type="submit" class="submit-btn">공유하기</button>
+                    </form>
+                </div>
+            </div>
+
+            <button class="modal-close" onclick="closeModal()">✕</button>
+        </div>
+    </div>
+</div>

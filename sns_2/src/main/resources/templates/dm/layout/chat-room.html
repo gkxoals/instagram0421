@@ -1,0 +1,37 @@
+<!-- templates/fragments/chat-room.html -->
+<div th:fragment="chatRoomFragment">
+    <div class="dm-chat-room" th:if="${roomId != null}">
+        <div class="chat-header" th:if="${chatPartnerNickname != ''}" th:text="${chatPartnerNickname}">상대 닉네임</div>
+        <button id="deleteChatRoomBtn" type="button">채팅방 삭제</button>
+
+        <div id="chatBox" class="chat-box">
+            <div th:each="msg : ${messages}"
+                 th:class="'chat-message ' + (${msg.senderId} == ${userId} ? 'me' : 'you')"
+                 th:attr="data-message-id=${msg.messageId}">
+
+                <div class="message-wrapper">
+                    <!-- ✅ ... 버튼 왼쪽 바깥에 -->
+                    <div th:if="${msg.senderId == userId and !msg.deleted}" class="message-menu-outside">
+                        <button class="menu-btn" type="button">⋯</button>
+                        <div class="menu-dropdown hidden">
+                            <button class="delete-btn" type="button">삭제</button>
+                        </div>
+                    </div>
+
+                    <!-- ✅ 말풍선 영역 -->
+                    <div class="message-bubble">
+                        <!-- 닉네임 (상대방 메시지일 때만 출력) -->
+                        <strong th:if="${msg.senderId != userId}" th:text="${msg.nickname}">상대 닉네임</strong>
+                        <div class="chat-message-text" th:text="${msg.content}">내용</div>
+                        <div class="chat-time" th:text="${#temporals.format(msg.sentAt, 'a h:mm:ss')}">시간</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="chat-input">
+            <input type="text" id="messageInput" placeholder="메시지를 입력하세요">
+            <button id="sendBtn">전송</button>
+        </div>
+    </div>
+</div>

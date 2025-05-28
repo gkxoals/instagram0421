@@ -1,0 +1,101 @@
+/* ✅ 프로필 카드 */
+.profile-card {
+  text-align: center;
+  margin-bottom: 30px;
+  background-color: #fff;
+  padding: 30px;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.profile-card .profile-image {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  border: 2px solid #ddd;
+  object-fit: cover;
+  margin-bottom: 15px;
+}
+
+.nickname {
+  font-size: 22px;
+  font-weight: bold;
+}
+
+.bio {
+  color: #666;
+  margin: 10px 0;
+}
+
+.gender,
+.created-at {
+  font-size: 14px;
+  color: #999;
+}
+
+/* ✅ 프로필 수정 폼 */
+#profileForm label {
+  font-weight: bold;
+  display: block;
+  margin-bottom: 5px;
+}
+
+#profileForm input[type="text"],
+#profileForm textarea,
+#profileForm select,
+#profileForm input[type="file"] {
+  width: 100%;
+  padding: 12px;
+  margin-bottom: 15px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  box-sizing: border-box;
+}
+
+#profileForm textarea {
+  resize: vertical;
+}
+
+#profileForm button[type="submit"],
+#deleteProfileImageButton {
+  width: 100%;
+  padding: 12px;
+  font-weight: bold;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+#profileForm button[type="submit"] {
+  background-color: #007bff;
+  color: white;
+  border: none;
+}
+
+#profileForm button[type="submit"]:hover {
+  background-color: #0056b3;
+}
+
+#deleteProfileImageButton {
+  background-color: #ff4d4d;
+  color: white;
+  border: none;
+  margin-top: 10px;
+}
+
+#deleteProfileImageButton:hover {
+  background-color: #cc0000;
+}
+
+/* ✅ 소개글 글자수 카운터 */
+#bioCount {
+  font-size: 12px;
+  color: #888;
+  text-align: right;
+}
+
+/* ✅ 반응형 */
+@media screen and (max-width: 768px) {
+  .profile-card {
+    padding: 20px;
+  }
+}

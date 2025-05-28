@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>DM 대상 선택</title>
+    <link rel="stylesheet" href="/css/dm/dm-select.css">
+</head>
+<body>
+<div class="dm-container">
+    <div class="dm-header">새로운 메시지</div>
+    <ul class="user-list">
+        <li class="user-item" th:each="user : ${users}">
+            <img th:src="@{${user.profileImage}}" alt="프로필 이미지">
+            <div class="user-info">
+                <span class="user-nickname" th:text="${user.nickname}"></span>
+            </div>
+            <a class="dm-link" th:href="@{'/dm/start?targetId=' + ${user.id}}">보내기</a>
+        </li>
+    </ul>
+</div>
+</body>
+</html>
