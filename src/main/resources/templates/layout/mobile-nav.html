@@ -1,0 +1,17 @@
+<div th:fragment="mobile-nav">
+<div class="mobile-nav" th:if="${loggedInUser != null}">
+    <a href="/"><img src="/icon/logo/1.png" alt="홈"/></a>
+    <a href="/"><img src="/icon/logo/2.png" alt="검색"/></a>
+    <a href="javascript:void(0);" onclick="openModal()"><img src="/icon/logo/7.png" alt="만들기"/></a>
+    <a href="/dm">
+        <img src="/icon/logo/5.png" alt="메세지"/>
+    </a>
+
+    <a href="/"><img src="/icon/logo/4.png" alt="릴스"/></a>
+    <a href="/profile">
+        <img class="profile-image"
+             th:src="${loggedInUser.profileImage != null ? loggedInUser.profileImage : '/images/default-profile.png'}"
+             alt="프로필"/>
+    </a>
+</div>
+</div>

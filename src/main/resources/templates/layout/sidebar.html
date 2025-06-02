@@ -1,0 +1,77 @@
+<!-- layout/sidebar.html -->
+<div th:fragment="sidebar">
+    <aside class="sidebar">
+        <div class="logo">
+            <a href="/">
+                <img id="logoImage" src="/icon/logo.png" alt="로고"/>
+            </a>
+        </div>
+
+        <nav>
+            <ul class="side_menu" th:if="${loggedInUser != null}">
+                <li><a href="/"><img src="/icon/logo/1.png" alt="홈"/><span>홈</span></a></li>
+                <li><a href="/"><img src="/icon/logo/2.png" alt="검색"/><span>검색</span></a></li>
+                <li><a href="/"><img src="/icon/logo/3.png" alt="탐색탭"/><span>탐색탭</span></a></li>
+                <li><a href="/"><img src="/icon/logo/4.png" alt="릴스"/><span>릴스</span></a></li>
+                <li>
+                    <a href="/dm">
+                        <img src="/icon/logo/5.png" alt="메세지"/>
+                        <span>메세지</span>
+                    </a>
+                </li>
+
+
+                <li>
+                    <a th:href="@{/notifications}" id="notification-bell" style="position: relative;">
+                        <img src="/icon/logo/6.png" alt="알림"/>
+                        <span>알림</span>
+                        <span id="notification-count" class="badge" th:text="${unreadCount > 0} ? ${unreadCount} : ''"
+                              th:classappend="${unreadCount > 0} ? '' : 'hidden'"></span>
+                    </a>
+                </li>
+
+
+
+
+                <li>
+
+                    <a href="javascript:void(0);" id="modalTrigger">
+                        <img src="/icon/logo/7.png" alt="만들기"/>
+                        <span>만들기</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="/profile">
+                        <img th:src="${loggedInUser.profileImage != null ? loggedInUser.profileImage : '/images/default-profile.png'}"
+                             alt="Profile"
+                             class="profile-img"/>
+                        <span>프로필</span>
+                    </a>
+                </li>
+            </ul>
+
+            <ul th:if="${loggedInUser == null}">
+                <li><a href="/user/login"><span>로그인</span></a></li>
+                <li><a href="/user/signup"><span>회원가입</span></a></li>
+            </ul>
+        </nav>
+
+        <div class="more-menu-container" th:if="${loggedInUser != null}">
+            <a href="javascript:void(0);" onclick="toggleMoreMenu()">
+                <img src="/icon/logo/8.png" alt="더보기"/>
+                <span>더보기</span>
+            </a>
+            <ul class="more-menu" id="moreMenu">
+                <li><a>설정</a></li>
+                <li><a>내 활동</a></li>
+                <li><a>저장됨</a></li>
+                <li><a>모든 전환</a></li>
+                <li><a>문제 신고</a></li>
+                <li class="logoutLine">
+                    <span th:text="${loggedInUser.name}" style="font-weight: bold;"></span>
+                    <a href="/user/logout" class="logout-btn" onclick="return confirmLogout();">로그아웃</a>
+                </li>
+            </ul>
+        </div>
+    </aside>
+</div>

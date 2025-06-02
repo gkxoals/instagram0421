@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>게시글 수정</title>
+    <link rel="stylesheet" href="/css/edit.css">
+</head>
+<body>
+<div class="edit-wrapper">
+    <div class="edit-box">
+        <h2>게시글 수정</h2>
+        <form th:action="@{/posts/edit/{id}(id=${post.id})}" method="post" enctype="multipart/form-data">
+            <div class="form-group">
+                <label for="content">내용</label>
+                <textarea id="content" name="content" th:text="${post.content}" required></textarea>
+            </div>
+
+            <!-- 기존 업로드된 미디어 표시 -->
+            <div class="form-group">
+                <label>기존 미디어</label>
+                <div class="media-preview">
+                    <div th:each="media : ${post.mediaList}">
+                        <img th:if="${media.mediaType == 'IMAGE'}" th:src="${media.filePath}" style="width: 100px; margin: 5px;" />
+                        <video th:if="${media.mediaType == 'VIDEO'}" th:src="${media.filePath}" controls style="width: 150px; margin: 5px;"></video>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 새 미디어 업로드 -->
+            <div class="form-group">
+                <label for="mediaFiles">새 이미지/영상 업로드</label>
+                <input type="file" id="mediaFiles" name="mediaFiles" accept="image/*,video/*" multiple>
+            </div>
+
+            <button type="submit" class="submit-btn">수정 완료</button>
+        </form>
+    </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Instagram DM</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- ✅ CSS -->
+    <link rel="stylesheet" href="/css/main.css"> <!-- 사이드바 -->
+    <link rel="stylesheet" href="/css/dm/dm-list.css"> <!-- 채팅방 목록 -->
+    <link rel="stylesheet" href="/css/dm/chat-room.css"> <!-- 채팅 내용 -->
+
+    <!-- ✅ JS -->
+    <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/stompjs@2.3.3/lib/stomp.min.js"></script>
+    <script src="/js/chat-room.js" defer></script>
+</head>
+<body th:attr="data-room-id=${roomId}, data-user-id=${userId}, data-nickname=${nickname}">
+
+<!-- ✅ 통합된 3열 구조 -->
+<div class="dm-wrapper">
+    <!-- ✅ 1열: 사이드바 -->
+    <aside class="sidebar force-compact animate-text">
+        <div class="logo">
+            <a href="/">
+                <img id="logoImage" src="/icon/logo2.png" alt="로고"/>
+            </a>
+        </div>
+
+        <nav>
+            <ul class="side_menu" th:if="${loggedInUser != null}">
+                <li><a href="/"><img src="/icon/logo/1.png" alt="홈"/><span>홈</span></a></li>
+                <li><a href="/"><img src="/icon/logo/2.png" alt="검색"/><span>검색</span></a></li>
+                <li><a href="/"><img src="/icon/logo/3.png" alt="탐색탭"/><span>탐색탭</span></a></li>
+                <li><a href="/"><img src="/icon/logo/4.png" alt="릴스"/><span>릴스</span></a></li>
+                <li><a href="/dm"><img src="/icon/logo/5.png" alt="메세지"/><span>메세지</span></a></li>
+                <li>
+                    <a href="/" id="notification-bell" style="position: relative;">
+                        <img src="/icon/logo/6.png" alt="알림"/>
+                        <span>알림</span>
+                        <span id="notification-count"
+                              class="badge"
+                              th:text="${unreadCount > 0} ? ${unreadCount} : ''"
+                              th:classappend="${unreadCount > 0} ? '' : 'hidden'"></span>
+                    </a>
+                </li>
+                <li><a href="javascript:void(0);" id="modalTrigger"><img src="/icon/logo/7.png" alt="만들기"/><span>만들기</span></a></li>
+                <li><a href="/profile">
+                    <img th:src="${loggedInUser.profileImage != null ? loggedInUser.profileImage : '/images/default-profile.png'}"
+                         alt="프로필"
+                         class="profile-img"/>
+                    <span>프로필</span></a>
+                </li>
+            </ul>
+
+            <ul th:if="${loggedInUser == null}">
+                <li><a href="/user/login"><span>로그인</span></a></li>
+                <li><a href="/user/signup"><span>회원가입</span></a></li>
+            </ul>
+        </nav>
+
+        <div class="more-menu-container" th:if="${loggedInUser != null}">
+            <a href="javascript:void(0);" onclick="toggleMoreMenu()">
+                <img src="/icon/logo/8.png" alt="더보기"/>
+                <span>더보기</span>
+            </a>
+            <ul class="more-menu" id="moreMenu">
+                <li><a>설정</a></li>
+                <li><a>내 활동</a></li>
+                <li><a>저장됨</a></li>
+                <li><a>모든 전환</a></li>
+                <li><a>문제 신고</a></li>
+                <li class="logoutLine">
+                    <span th:text="${loggedInUser.name}" style="font-weight: bold;"></span>
+                    <a href="/user/logout" class="logout-btn" onclick="return confirmLogout();">로그아웃</a>
+                </li>
+            </ul>
+        </div>
+    </aside>
+
+    <!-- ✅ 2열: 채팅방 리스트 -->
+    <div class="dm-user-list">
+        <div class="dm-header">메시지</div>
+
+        <!-- 전체 유저 목록 -->
+        <div class="dm-section">
+            <div class="dm-section-title">전체 유저</div>
+            <ul class="dm-user-items">
+                <li th:each="user : ${allUsers}" class="dm-user-item">
+                    <a th:href="@{'/dm/start?targetId=' + ${user.userId}}">
+                        <img th:src="${user.profileImage}" class="dm-profile-img">
+                        <div class="dm-user-info">
+                            <div class="dm-nickname" th:text="${user.nickname}">닉네임</div>
+                        </div>
+                    </a>
+                </li>
+            </ul>
+        </div>
+
+        <!-- 기존 대화 목록 -->
+        <div class="dm-section">
+            <div class="dm-section-title">기존 대화</div>
+            <ul class="dm-user-items">
+                <li th:each="user : ${chatRooms}" class="dm-user-item">
+                    <a th:href="@{'/dm/users?roomId=' + ${user.roomId}}">
+                        <img th:src="${user.profileImage}" class="dm-profile-img">
+                        <div class="dm-user-info">
+                            <div class="dm-nickname" th:text="${user.nickname}">닉네임</div>
+                            <div class="dm-preview" th:text="${user.lastMessage}">최근 메시지</div>
+                        </div>
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- ✅ 3열: 채팅방 내용 fragment -->
+    <div th:replace="dm/layout/chat-room :: chatRoomFragment"></div>
+</div>
+
+</body>
+</html>
