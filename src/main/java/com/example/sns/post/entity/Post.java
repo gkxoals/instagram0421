@@ -27,7 +27,8 @@ public class Post {
     @Column(nullable = false)
     private String content;
 
-    @Column(nullable = false, name = "image_url")
+    // 이미지가 없는 게시물도 허용해야 하므로 nullable 설정을 제거한다
+    @Column(name = "image_url")
     private String imageUrl;
 
     @Column(nullable = false, updatable = false)
