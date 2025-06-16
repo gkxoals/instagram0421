@@ -21,6 +21,4 @@ public class PostMedia {
     @ManyToOne(fetch = FetchType.LAZY)
     private Post post;
 
-
-
 }

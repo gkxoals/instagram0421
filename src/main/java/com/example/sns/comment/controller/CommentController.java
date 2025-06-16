@@ -28,12 +28,9 @@ public class CommentController {
 
     @PostMapping("/add")
     public String addComment(@RequestParam Long postId, @RequestParam String content, Principal principal) {
-
         String userEmail = principal.getName();
-        User user = userService.findByEmail(userEmail);
-
-        commentService.saveComment(postId, content, user.getUserId());
-
+        UserResponseDTO userDTO = userService.getUserResponseByEmail(userEmail);
+        commentService.saveComment(postId, content, userDTO.getUserId());
         return "redirect:/";
     }
 
@@ -43,13 +40,13 @@ public class CommentController {
             return "redirect:/login";
         }
         String email = principal.getName();
-        User user = userService.findByEmail(email);
+        UserResponseDTO userDTO = userService.getUserResponseByEmail(email);
 
-        Comment parentComment = commentRepository.findById(dto.getParentId()).orElseThrow(() -> new IllegalArgumentException("부모 댓글이 없습니다."));
+        Comment parentComment = commentRepository.findById(dto.getParentId())
+                .orElseThrow(() -> new IllegalArgumentException("부모 댓글이 없습니다."));
 
         Post post = parentComment.getPost();
-        commentService.createReply(dto.getContent(), post, parentComment, user);
-
+        commentService.createReply(dto.getContent(), post, parentComment, userDTO);
         return "redirect:/";
     }
 

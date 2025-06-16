@@ -117,7 +117,7 @@ public class NotificationService {
         notification.setRead(true);
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     private String getTargetType(NotificationType type) {
         return switch (type) {
             case LIKE_POST, FOLLOW -> "POST";
@@ -126,7 +126,7 @@ public class NotificationService {
         };
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     private Long getPostId(Notification notification) {
         return switch (notification.getType()) {
             case LIKE_POST -> notification.getTargetId();

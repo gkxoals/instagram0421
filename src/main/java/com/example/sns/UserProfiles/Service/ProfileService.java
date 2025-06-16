@@ -1,12 +1,14 @@
 package com.example.sns.UserProfiles.Service;
 
 import com.example.sns.UserProfiles.DTO.ProfileUpdateRequest;
+import com.example.sns.UserProfiles.DTO.UserProfileDTO;
 import com.example.sns.UserProfiles.Img.ImageUtil;
 import com.example.sns.UserProfiles.repository.ProfileRepository;
 import com.example.sns.User.entity.User;
 import com.example.sns.User.repository.UserRepository;
 import com.example.sns.UserProfiles.entity.Profile;
 import com.example.sns.exception.ResourceNotFoundException;
+import com.example.sns.post.repository.PostRepository;
 import org.apache.commons.io.FilenameUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -30,12 +32,37 @@ public class ProfileService {
 
     private final ProfileRepository profileRepository;
     private final UserRepository userRepository;
+    private final PostRepository postRepository;
 
     @Autowired
-    public ProfileService(ProfileRepository profileRepository, UserRepository userRepository) {
+    public ProfileService(ProfileRepository profileRepository, UserRepository userRepository, PostRepository postRepository) {
         this.profileRepository = profileRepository;
         this.userRepository = userRepository;
+        this.postRepository = postRepository;
     }
+
+    public UserProfileDTO getUserProfileDTOByNickname(String nickname) {
+        Profile profile = profileRepository.findByNickname(nickname)
+                .orElseThrow(() -> new ResourceNotFoundException("프로필을 찾을 수 없습니다."));
+
+        User user = profile.getUserId();
+        int postCount = postRepository.countByUser(user); // 🔥 핵심
+
+        return UserProfileDTO.builder()
+                .id(user.getUserId())
+                .nickname(profile.getNickname())
+                .bio(profile.getBio())
+                .gender(String.valueOf(profile.getGender()))
+                .email(user.getEmail())
+                .profileImage(user.getProfileImage())
+                .postCount(postCount) // ✅ DTO에 포함
+                .build();
+    }
+
+
+
+
+
 
     /**
      * 사용자 ID로 프로필을 조회하거나, 존재하지 않으면 기본 프로필을 생성하여 반환
@@ -187,17 +214,11 @@ public class ProfileService {
     }
 
 
-    public String saveProfileImage(MultipartFile file) throws IOException {
-        if (file.isEmpty()) {
-            return "default.png";
-        }
-        String extension = FilenameUtils.getExtension(file.getOriginalFilename());
-        String fileName = UUID.randomUUID() + "." + extension;
-        Path path = Paths.get(UPLOAD_DIR + fileName);
-        Files.write(path, file.getBytes());
-
-        return fileName;
+    public Profile getProfileByUserId(Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with id=" + userId));
+        return profileRepository.findByUserId(user)
+                .orElseThrow(() -> new ResourceNotFoundException("Profile not found for user id=" + userId));
     }
-
 
 }

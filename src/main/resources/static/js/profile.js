@@ -11,7 +11,7 @@ function confirmLogout() {
     return confirm("정말 로그아웃 하시겠습니까?");
 }
 
-// ✅ 더보기 외부 클릭 시 닫기 (에러 방지 완전 처리)
+// ✅ 외부 클릭 시 더보기 메뉴 닫기
 document.addEventListener("click", function (event) {
     const menu = document.getElementById("moreMenu");
     const toggle = document.querySelector(".more-menu-container > a");
@@ -22,65 +22,6 @@ document.addEventListener("click", function (event) {
     if (menu && !menuClicked && !toggleClicked) {
         menu.classList.remove("show");
     }
-});
-
-// ✅ DOMContentLoaded
-document.addEventListener("DOMContentLoaded", function () {
-    const bioInput = document.getElementById('bio');
-    const bioCount = document.getElementById('bioCount');
-
-    if (bioInput && bioCount) {
-        bioCount.textContent = `${bioInput.value.length} / 150`;
-        bioInput.addEventListener('input', () => {
-            bioCount.textContent = `${bioInput.value.length} / 150`;
-        });
-    }
-
-    // ✅ 프로필 이미지 삭제 버튼 이벤트
-    const deleteBtn = document.getElementById("deleteProfileImageButton");
-       if (deleteBtn) {
-        deleteBtn.addEventListener("click", function () {
-            if (confirm("정말 프로필 사진을 삭제하시겠습니까?")) {
-                fetch("/profile/deleteImage", {
-                    method: "POST"
-                }).then(res => res.text())
-                  .then(data => {
-                    if (data.includes("성공")) {
-                        alert("프로필 사진이 삭제되었습니다.");
-                        // 캐시 우회: 강제로 이미지 새로 로딩
-                        const img = document.getElementById("profileImageElement");
-                        if (img) {
-                            img.src = "/images/default-profile.png?rand=" + Math.random();
-                        }
-                    } else {
-                        alert("프로필 사진 삭제 실패: " + data);
-                    }
-                }).catch(err => {
-                    console.error("삭제 중 오류 발생:", err);
-                    alert("오류가 발생했습니다.");
-                });
-            }
-        });
-      }
-    });
-
-// ✅ jQuery DOM 준비
-$(document).ready(function () {
-    // 닉네임, 소개글 수정
-    $("#editNicknameButton").on("click", function (e) {
-        e.preventDefault();
-        $("#nickname").removeAttr("readonly");
-    });
-
-    $("#editBioButton").on("click", function (e) {
-        e.preventDefault();
-        $("#bio").removeAttr("readonly");
-    });
-
-    // 프로필 이미지 변경 시 유효성 검사
-    $("#profileImage").on("change", function () {
-        validateProfileImage();
-    });
 });
 
 // ✅ 이미지 업로드 유효성 검사
@@ -106,3 +47,120 @@ function validateProfileImage() {
 
     return true;
 }
+
+// ✅ 모달 열기
+function openPostModal(postId) {
+    fetch(`/posts/${postId}/modal`)
+        .then(res => res.text())
+        .then(html => {
+            document.getElementById("modalContentArea").innerHTML = html;
+            document.getElementById("postModal").classList.remove("hidden");
+        })
+        .catch(err => {
+            console.error("모달 로딩 실패:", err);
+            alert("게시물 로딩 실패");
+        });
+}
+
+// ✅ 모달 닫기
+function closeModal() {
+    document.getElementById("postModal").classList.add("hidden");
+    document.getElementById("modalContentArea").innerHTML = "";
+}
+
+// ✅ DOMContentLoaded
+document.addEventListener("DOMContentLoaded", function () {
+    // 🔹 소개글 글자 수 카운팅
+    const bioInput = document.getElementById('bio');
+    const bioCount = document.getElementById('bioCount');
+    if (bioInput && bioCount) {
+        bioCount.textContent = `${bioInput.value.length} / 150`;
+        bioInput.addEventListener('input', () => {
+            bioCount.textContent = `${bioInput.value.length} / 150`;
+        });
+    }
+
+    // 🔹 프로필 이미지 삭제
+    const deleteBtn = document.getElementById("deleteProfileImageButton");
+    if (deleteBtn) {
+        deleteBtn.addEventListener("click", function () {
+            if (confirm("정말 프로필 사진을 삭제하시겠습니까?")) {
+                fetch("/profile/deleteImage", { method: "POST" })
+                    .then(res => res.text())
+                    .then(data => {
+                        if (data.includes("성공")) {
+                            alert("프로필 사진이 삭제되었습니다.");
+                            const img = document.getElementById("profileImageElement");
+                            if (img) {
+                                img.src = "/images/default-profile.png?rand=" + Math.random();
+                            }
+                        } else {
+                            alert("프로필 사진 삭제 실패: " + data);
+                        }
+                    })
+                    .catch(err => {
+                        console.error("삭제 중 오류 발생:", err);
+                        alert("오류가 발생했습니다.");
+                    });
+            }
+        });
+    }
+
+    // 🔹 게시물 썸네일 클릭 → 모달 열기 (profile 페이지에서만)
+    if (window.location.pathname.startsWith("/profile")) {
+        document.querySelectorAll(".post-item").forEach(item => {
+            item.addEventListener("click", function (e) {
+                e.preventDefault();
+                const postId = this.getAttribute("data-post-id");
+                openPostModal(postId);
+            });
+        });
+    }
+
+    // 🔹 모달 닫기 (X 버튼 + 바깥 영역 + ESC 키)
+    const closeBtn = document.querySelector(".close-button");
+    if (closeBtn) {
+        closeBtn.addEventListener("click", closeModal);
+    }
+
+    const modal = document.getElementById("postModal");
+    if (modal) {
+        modal.addEventListener("click", function (e) {
+            if (e.target.id === "postModal") {
+                closeModal();
+            }
+        });
+    }
+
+    window.addEventListener("keydown", function (e) {
+        if (e.key === "Escape") {
+            closeModal();
+        }
+    });
+});
+
+// ✅ 페이지 완전히 로드된 후 해시로 자동 모달 열기 (e.g., /profile/2#post-5)
+window.addEventListener("load", function () {
+    const hash = window.location.hash;
+    if (hash && hash.startsWith("#post-")) {
+        const postId = hash.replace("#post-", "");
+        openPostModal(postId);
+    }
+});
+
+// ✅ jQuery (닉네임/소개글 편집 + 이미지 유효성 검사)
+$(function () {
+    $("#editNicknameButton").on("click", function (e) {
+        e.preventDefault();
+        $("#nickname").removeAttr("readonly");
+    });
+
+    $("#editBioButton").on("click", function (e) {
+        e.preventDefault();
+        $("#bio").removeAttr("readonly");
+    });
+
+    $("#profileImage").on("change", function () {
+        validateProfileImage();
+    });
+});

@@ -1,0 +1,124 @@
+.search-panel {
+  position: fixed;
+  left: 72px;
+  top: 0;
+  width: 400px;
+  height: 100vh;
+  background-color: white;
+  border-left: 1px solid #ddd;
+  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+  transform: translateX(-100%);
+  opacity: 0;
+  pointer-events: none;
+  transition: transform 0.3s ease, opacity 0.3s ease;
+  z-index: 900;
+  padding: 20px;
+  overflow-y: auto;
+}
+
+.search-panel.show {
+  transform: translateX(0);
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.search-panel.hidden {
+  display: none;
+}
+
+.search-header {
+  font-size: 20px;
+  font-weight: bold;
+  margin-bottom: 20px;
+}
+
+.search-form input {
+  width: 100%;
+  padding: 10px;
+  border-radius: 8px;
+  border: none;
+  background: #efefef;
+  font-size: 14px;
+}
+
+.search-history-title {
+  margin-top: 30px;
+  font-weight: bold;
+  font-size: 14px;
+  color: #333;
+}
+
+#searchResultList {
+  margin-top: 15px;
+  list-style: none;
+  padding-left: 0;
+}
+
+#searchResultList li {
+  margin-bottom: 12px;
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+.search-user-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.search-user-list li {
+    padding: 8px;
+    border-bottom: 1px solid #ddd;
+}
+
+.search-post-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    gap: 10px;
+    margin-top: 10px;
+}
+
+/* search.css 예시 */
+.search-post-list a {
+  display: block;
+  aspect-ratio: 1 / 1;
+  border-radius: 8px;
+  overflow: hidden;
+  background-size: cover;
+  background-position: center;
+  transition: transform 0.2s ease;
+}
+.search-post-list a:hover {
+  transform: scale(1.03);
+}
+
+.search-post-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.search-post-item {
+    display: block;
+    border-radius: 8px;
+    overflow: hidden;
+    background-color: #fff;
+    text-decoration: none;
+    color: inherit;
+    box-shadow: 0 0 4px rgba(0, 0, 0, 0.1);
+}
+
+.search-post-item img {
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    object-fit: cover;
+}
+
+.search-post-item .caption {
+    padding: 6px;
+    font-size: 12px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}

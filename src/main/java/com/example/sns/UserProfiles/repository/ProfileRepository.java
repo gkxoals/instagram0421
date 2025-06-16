@@ -43,5 +43,6 @@ public interface ProfileRepository extends JpaRepository<Profile, Long> {
      */
     boolean existsByNickname(String nickname);
     Optional<Profile> findByNickname(String nickname);
+    int countByUserId(User user);
 
 }

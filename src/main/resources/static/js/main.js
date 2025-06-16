@@ -3,6 +3,7 @@ $(document).ready(function () {
     let previewList = [];
     let currentIndex = 0;
 
+
     // 알림 패널 토글
     $("#notification-bell").on("click", function (e) {
         e.preventDefault();
@@ -14,8 +15,8 @@ $(document).ready(function () {
             setTimeout(() => panel.addClass("hidden"), 300);
             updateLogoImage(false);
             $("#logoImage").css("opacity", "0");
-            sidebar.removeClass("force-compact");
-            setTimeout(() => sidebar.addClass("animate-text"), 200);
+            expandSidebar();
+
             setTimeout(() => $("#logoImage").css("opacity", "1"), 400);
             return;
         }
@@ -30,7 +31,7 @@ $(document).ready(function () {
         $.get("/notifications", function (html) {
             const newContent = $(html).find("#notificationPanel").html();
             $("#notificationPanel").html(newContent).removeClass("hidden").addClass("show");
-            sidebar.addClass("force-compact").removeClass("animate-text");
+            collapseSidebar();
             updateLogoImage(true);
             $("#logoImage").css("opacity", "1");
         });
@@ -71,8 +72,7 @@ $(document).ready(function () {
             $("#notificationPanel").removeClass("show");
             setTimeout(() => $("#notificationPanel").addClass("hidden"), 300);
             updateLogoImage(false);
-            sidebar.removeClass("force-compact");
-            setTimeout(() => sidebar.addClass("animate-text"), 200);
+            window.expandSidebar();
         }
     });
 
@@ -475,4 +475,23 @@ $(document).ready(function () {
     }, { threshold: 0 });
 
     commentLists.forEach(cl => observer.observe(cl));
+
 });
+
+window.collapseSidebar = function () {
+    const sidebar = document.querySelector(".sidebar");
+    if (!sidebar) {
+        console.log("❌ .sidebar not found!");
+        return;
+    }
+    sidebar.classList.add("force-compact");
+    sidebar.classList.remove("animate-text");
+    void sidebar.offsetWidth;
+};
+
+    window.expandSidebar = function () {
+        const sidebar = document.querySelector(".sidebar");
+        if (!sidebar) return;
+        sidebar.classList.remove("force-compact");
+        setTimeout(() => sidebar.classList.add("animate-text"), 200);
+    };

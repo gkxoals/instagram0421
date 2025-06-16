@@ -2,9 +2,12 @@ package com.example.sns.post.controller;
 
 import com.example.sns.User.Details.CustomUserDetails;
 import com.example.sns.User.entity.User;
+import com.example.sns.UserProfiles.entity.Profile;
+import com.example.sns.UserProfiles.repository.ProfileRepository;
 import com.example.sns.comment.DTO.CommentDTO;
 import com.example.sns.comment.service.CommentService;
 import com.example.sns.notification.service.NotificationService;
+import com.example.sns.post.DTO.PostDTO;
 import com.example.sns.post.entity.Post;
 import com.example.sns.post.repository.PostRepository;
 import com.example.sns.post.service.PostService;
@@ -20,6 +23,7 @@ import org.springframework.data.domain.Sort;
 
 
 import java.io.IOException;
+import java.security.Principal;
 import java.util.List;
 
 @Controller
@@ -31,6 +35,7 @@ public class PostController {
     private final PostService postService;
     private final CommentService commentService;
     private final NotificationService notificationService;
+    private final ProfileRepository profileRepository;
 
 
     @GetMapping("/")
@@ -87,15 +92,36 @@ public class PostController {
         return "redirect:/";
     }
     @GetMapping("/{id}")
-    public String getPostDetail(@PathVariable Long id, Model model) {
-        Post post = postRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("해당 게시글이 없습니다."));
-        List<CommentDTO> commentDTOList = commentService.getCommentsByPostId(id); // 필요 시
-
+    public String getPostDetail(@PathVariable Long id, Model model, Principal principal) {
+        PostDTO post = postService.getPostById(id, principal);
         model.addAttribute("post", post);
-        model.addAttribute("comments", commentDTOList); // 템플릿에서 ${comments} 사용
+        model.addAttribute("comments", post.getComments()); // 선택 사항
 
-        return "post/detail"; // 예: templates/post/detail.html
+        return "posts/detail-modal";
     }
+
+    @GetMapping("/search")
+    public String search(@RequestParam("q") String keyword, Model model) {
+        List<Post> results = postService.searchPosts(keyword);
+        model.addAttribute("posts",results);
+        model.addAttribute("keyword",keyword);
+        return "search/search";
+    }
+    // 모달용 게시물 상세 보기
+    @GetMapping("/{id}/modal")
+    public String getPostModal(@PathVariable Long id, Model model) {
+        Post post = postRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("게시글이 존재하지 않습니다."));
+        List<CommentDTO> commentDTOList = commentService.getCommentsByPostId(id);
+        String nickname = profileRepository.findByUserId(post.getUser())
+                .map(Profile::getNickname)
+                .orElse("알 수 없음");
+
+        PostDTO dto = new PostDTO(post, null, nickname, commentDTOList, null);
+        model.addAttribute("post", dto);
+        return "posts/detail-modal :: modal-content";
+    }
+
+
 
 }

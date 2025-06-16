@@ -7,6 +7,7 @@ import com.example.sns.UserProfiles.repository.ProfileRepository;
 import com.example.sns.comment.DTO.CommentDTO;
 import com.example.sns.comment.entity.Comment;
 import com.example.sns.comment.repository.CommentRepository;
+import com.example.sns.exception.ResourceNotFoundException;
 import com.example.sns.like.LikeType;
 import com.example.sns.like.repository.LikeRepository;
 import com.example.sns.notification.NotificationType;
@@ -24,6 +25,7 @@ import com.example.sns.UserProfiles.entity.Profile;
 
 import java.io.File;
 import java.io.IOException;
+import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -79,13 +81,14 @@ public class PostService {
         postRepository.save(post);
     }
 
-    @Transactional
+
     private String saveFile(MultipartFile file) throws IOException {
         //강의실
         String uploadDir = "C:/Users/User/Desktop/sns_2/postImages/";
 
-        // 내 컴퓨터
+//       //내 컴퓨터
 //        String uploadDir = "C:/Users/하태민/OneDrive/바탕 화면/sns_2/postImages/";
+
         File uploadPath = new File(uploadDir);
         if (!uploadPath.exists()) uploadPath.mkdirs();
 
@@ -122,7 +125,11 @@ public class PostService {
                     .toList(); // 또는 .collect(Collectors.toList())
 
             // ✅ 완성된 commentDTOs를 포함해 PostDTO 생성
-            PostDTO dto = new PostDTO(post, profileImage, nickname, commentDTOs);
+            String thumbnailUrl = null;
+            if (!post.getMediaList().isEmpty()) {
+                thumbnailUrl = post.getMediaList().get(0).getFilePath();
+            }
+            PostDTO dto = new PostDTO(post, profileImage, nickname, commentDTOs,thumbnailUrl);
 
             // 좋아요 수
             int likeCount = likeRepository.countByTargetIdAndTargetType(post.getId(), LikeType.POST);
@@ -190,5 +197,93 @@ public class PostService {
         // 마지막으로 게시글 삭제
         postRepository.deleteById(postId);
     }
+
+    //게시물 검색기능
+    @Transactional
+    public List<Post> searchPosts(String keyword) {
+        return postRepository.searchByKeyword(keyword);
+    }
+
+    @Transactional
+    public List<PostDTO> getPostsByUserId(Long userId) {
+        // 🔥 이걸로!
+        List<Post> posts = postRepository.findByUserIdWithMedia(userId);
+
+        List<PostDTO> dtoList = new ArrayList<>();
+
+        for (Post post : posts) {
+            String profileImage = userService.getProfileImageByUserId(post.getUser().getUserId());
+
+            String nickname = profileRepository.findByUserId(post.getUser())
+                    .map(profile -> profile.getNickname())
+                    .orElse("알 수 없음");
+
+            List<CommentDTO> commentDTOs = post.getComments().stream()
+                    .map(comment -> {
+                        String commentNickname = profileRepository.findByUserId(comment.getUser())
+                                .map(profile -> profile.getNickname())
+                                .orElse("알 수 없음");
+                        return new CommentDTO(comment, commentNickname);
+                    })
+                    .toList();
+
+            String thumbnailUrl = null;
+            if (!post.getMediaList().isEmpty()) {
+                thumbnailUrl = post.getMediaList().get(0).getFilePath(); // ✅ 여기서 null 문제 해결됨
+            }
+
+            PostDTO dto = new PostDTO(post, profileImage, nickname, commentDTOs, thumbnailUrl);
+            dto.setLikedByMe(false); // 임시 처리
+
+            dtoList.add(dto);
+        }
+
+        return dtoList;
+    }
+
+
+    @Transactional
+    public PostDTO getPostById(Long postId, Principal principal) {
+        Post post = postRepository.findByIdWithMediaAndUser(postId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 게시물을 찾을 수 없습니다."));
+
+        String profileImage = userService.getProfileImageByUserId(post.getUser().getUserId());
+        String nickname = profileRepository.findByUserId(post.getUser())
+                .map(Profile::getNickname)
+                .orElse("알 수 없음");
+
+        List<CommentDTO> commentDTOs = post.getComments().stream()
+                .map(comment -> {
+                    String commentNickname = profileRepository.findByUserId(comment.getUser())
+                            .map(Profile::getNickname)
+                            .orElse("알 수 없음");
+                    return new CommentDTO(comment, commentNickname);
+                }).toList();
+
+        String thumbnailUrl = post.getMediaList().isEmpty() ? null
+                : post.getMediaList().get(0).getFilePath();
+
+        PostDTO dto = new PostDTO(post, profileImage, nickname, commentDTOs, thumbnailUrl);
+
+        // 좋아요 수 및 상태
+        int likeCount = likeRepository.countByTargetIdAndTargetType(postId, LikeType.POST);
+        dto.setLikeCount(likeCount);
+
+        if (principal != null) {
+            String email = principal.getName();
+            User currentUser = userRepository.findByEmail(email)
+                    .orElseThrow(() -> new IllegalArgumentException("유저 없음"));
+            boolean likedByMe = likeRepository
+                    .findByUserAndTargetIdAndTargetType(currentUser, postId, LikeType.POST)
+                    .isPresent();
+            dto.setLikedByMe(likedByMe);
+        } else {
+            dto.setLikedByMe(false);
+        }
+
+        return dto;
+    }
+
+
 
 }

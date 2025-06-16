@@ -46,4 +46,14 @@ public class Post {
     @OneToMany(mappedBy = "post", fetch = FetchType.LAZY)
     @OrderBy("createdAt ASC")
     private List<Comment> comments = new ArrayList<>();
+
+    public String getThumbnailUrl() {
+        return mediaList.stream()
+                .filter(media -> "IMAGE".equals(media.getMediaType()))
+                .findFirst()
+                .map(PostMedia::getFilePath)
+                .orElse("/images/default-thumbnail.png"); // 기본 이미지 경로
+    }
+
+
 }

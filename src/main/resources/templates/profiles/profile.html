@@ -1,78 +1,97 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
+    <title th:text="${profile.nickname} + '님의 Instagram'">프로필</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>사용자 프로필</title>
-    <link rel="stylesheet" href="/css/Edit profile.css">
     <link rel="stylesheet" href="/css/main.css">
+    <link rel="stylesheet" href="/css/profile.css">
 
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.js"></script>
     <script src="/js/main.js"></script>
     <script src="/js/profile.js"></script>
+
+
 </head>
 <body>
 
-<!-- ✅ 사이드바 -->
+<!-- ✅ 왼쪽 사이드바 -->
 <div th:replace="layout/sidebar :: sidebar"></div>
 
-<!-- ✅ 모바일 하단 네비게이션 -->
-<div th:replace="layout/mobile-nav :: mobile-nav"></div>
+<main class="main-feed profile-page">
 
-<!-- ✅ 메인 콘텐츠 -->
-<main class="main-feed">
-    <div class="post profile-card">
-        <img id="profileImageElement"
-             th:src="${profile != null && profile.profileImage != null ? profile.profileImage : '/images/default-profile.png'}"
-             alt="프로필 이미지" class="profile-image">
-        <h2 class="nickname"
-            th:text="${profile != null && profile.nickname != null ? profile.nickname : '기본닉네임'}"></h2>
-        <p class="bio" th:text="${profile != null && profile.bio != null ? profile.bio : '소개글 없음'}"></p>
-        <p class="gender"
-           th:text="${profile != null && profile.gender != null ? '성별: ' + profile.gender : '성별 정보 없음'}"></p>
-        <p class="created-at"
-           th:text="${profile != null && profile.createdAt != null ? '가입일: ' + profile.createdAt : '가입일 정보 없음'}"></p>
-
-        <button id="deleteProfileImageButton">프로필 사진 삭제</button>
-
-        <div th:if="${error != null and error != ''}">
-            <script>
-                document.addEventListener("DOMContentLoaded", function () {
-                    alert("[[${error}]]");
-                });
-            </script>
+    <!-- ✅ 프로필 상단 -->
+    <section class="profile-header">
+        <div class="profile-image-wrapper">
+            <img class="profile-image"
+                 th:src="${profile.profileImage != null ? profile.profileImage : '/images/default-profile.png'}"
+                 alt="프로필 이미지">
         </div>
 
-        <form action="/profile/update" method="post" id="profileForm" enctype="multipart/form-data"
-              onsubmit="return validateProfileImage()">
-            <div>
-                <label for="nickname">닉네임</label>
-                <input type="text" id="nickname" name="nickname" th:value="${profile.nickname}" maxlength="20" required>
+        <div class="profile-info">
+            <div class="top-row">
+                <h2 class="username" th:text="${profile.nickname}">닉네임</h2>
+                <th:block th:if="${isOwner}">
+                    <a th:href="@{/profile/profile-edit}" class="btn">프로필 편집</a>
+                </th:block>
+                <th:block th:unless="${isOwner}">
+                    <button class="btn follow-btn" th:data-user-id="${profile.userId}">팔로우</button>
+                </th:block>
             </div>
-            <div>
-                <label for="bio">소개글</label>
-                <textarea id="bio" name="bio" th:text="${profile.bio}"
-                          maxlength="150" placeholder="최대 150자까지 입력 가능"></textarea>
-                <p id="bioCount">0 / 150</p>
-            </div>
-            <div>
-                <label for="gender">성별</label>
-                <select id="gender" name="gender">
-                    <option value="MALE">남성</option>
-                    <option value="FEMALE">여성</option>
-                </select>
-            </div>
-            <div>
-                <label for="profileImage">프로필 이미지</label>
-                <input type="file" id="profileImage" name="profileImage">
-            </div>
-            <button type="submit">프로필 업데이트</button>
-        </form>
-    </div>
-</main>
-<!-- ✅ 게시글 업로드 모달 -->
-<div th:replace="layout/uploadModal :: uploadModal"></div>
 
+            <ul class="profile-stats">
+                <!-- <li><strong th:text="${profile.postCount}">0</strong> 게시물</li>-->
+                <li><strong>0</strong> 게시물</li>
+                <li><strong>0</strong> 팔로워</li>
+                <li><strong>0</strong> 팔로우</li>
+            </ul>
+
+            <div class="bio">
+                <p class="nickname" th:text="${profile.nickname}">닉네임</p>
+                <p class="bio-text" th:text="${profile.bio}">소개글 없음</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- ✅ 탭 -->
+    <section class="profile-tabs">
+        <div class="tab active">게시물</div>
+        <div class="tab disabled">저장됨</div>
+        <div class="tab disabled">태그됨</div>
+    </section>
+
+    <!-- ✅ 게시물 영역 -->
+    <section class="post-list">
+
+        <th:block th:if="${#lists.isEmpty(posts)}">
+            <div class="no-posts">
+                <p class="no-posts-title">사진 공유</p>
+                <p class="no-posts-desc">사진을 공유하면 회원님의 프로필에 표시됩니다.</p>
+                <th:block th:if="${isOwner}">
+                    <a href="/post/create" class="upload-link">첫 사진 공유하기</a>
+                </th:block>
+            </div>
+        </th:block>
+
+        <!-- 게시물 그리드 -->
+        <div class="post-grid" th:unless="${#lists.isEmpty(posts)}">
+            <div class="post-item" th:each="post : ${posts}" th:attr="data-post-id=${post.id}">
+                <img th:src="${post.thumbnailUrl}" alt="게시물 썸네일" class="thumbnail-img">
+            </div>
+        </div>
+
+        <!-- 모달 -->
+        <div id="postModal" class="modal hidden">
+            <div class="modal-content">
+                <span class="close-button" onclick="closeModal()">&times;</span>
+                <div id="modalContentArea"></div>
+            </div>
+        </div>
+
+    </section>
+
+</main>
 
 </body>
 </html>
+

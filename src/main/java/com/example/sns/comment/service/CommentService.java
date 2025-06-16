@@ -12,6 +12,7 @@ import com.example.sns.notification.repository.NotificationRepository;
 import com.example.sns.notification.service.NotificationService;
 import com.example.sns.post.entity.Post;
 import com.example.sns.post.repository.PostRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -30,7 +31,7 @@ public class CommentService {
     private final NotificationRepository notificationRepository;
     private final ProfileRepository profileRepository;
 
-
+    @Transactional
     public void saveComment(Long postId, String content, Long userId) {
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new IllegalArgumentException("게시글을 찾을 수 없습니다."));
@@ -57,7 +58,11 @@ public class CommentService {
 
     }
 
-    public void createReply(String content, Post post, Comment parent, User user) {
+    @Transactional
+    public void createReply(String content, Post post, Comment parent, UserResponseDTO userResponseDTO) {
+        User user = userRepository.findById(userResponseDTO.getUserId())
+                .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
+
         Comment reply = new Comment();
         reply.setPost(post);
         reply.setParent(parent);
@@ -80,6 +85,7 @@ public class CommentService {
 
     }
 
+    @Transactional
     public List<CommentDTO> getCommentsByPostId(Long postId) {
         List<Comment> comments = commentRepository.findByPostId(postId);
 
@@ -93,7 +99,7 @@ public class CommentService {
                 .collect(Collectors.toList());
     }
 
-
+    @Transactional
     public void deleteComment(Long commentId, UserResponseDTO currentUser) {
         Comment comment = commentRepository.findById(commentId)
                 .orElseThrow(() -> new IllegalArgumentException("댓글이 존재하지 않습니다."));

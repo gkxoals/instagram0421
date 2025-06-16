@@ -1,0 +1,25 @@
+<!-- layout/search-panel.html -->
+<div th:fragment="searchPanel">
+    <div class="search-panel" id="searchPanel">
+        <div class="search-header">검색</div>
+        <form class="search-form">
+            <input type="text" name="q" placeholder="검색어 입력" required />
+        </form>
+
+        <div class="search-result-section">
+            <div class="search-user-section">
+                <div class="search-section-title">👤 사용자</div>
+                <ul id="searchUserList" class="search-user-list">
+                    <li class="search-placeholder">검색어를 입력하세요.</li>
+                </ul>
+            </div>
+
+            <div class="search-post-section">
+                <div class="search-section-title">📝 게시물</div>
+                <div id="searchPostList" class="search-post-list">
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

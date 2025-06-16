@@ -27,9 +27,14 @@ public class PostDTO {
     private String nickname;
     private UserProfileDTO user;
     private List<PostMediaDTO> mediaList;
+    private String thumbnailUrl;
 
 
-    public PostDTO(Post post, String profileImage, String nickname, List<CommentDTO> comments) {
+
+
+
+
+    public PostDTO(Post post, String profileImage, String nickname, List<CommentDTO> comments, String thumbnailUrl) {
         this.id = post.getId();
         this.content = post.getContent();
         this.createdAt = post.getCreatedAt();
@@ -52,6 +57,7 @@ public class PostDTO {
                         media.getUploadOrder()
                 ))
                 .collect(Collectors.toList());
+        this.thumbnailUrl = thumbnailUrl;
     }
 
 
@@ -60,6 +66,5 @@ public class PostDTO {
                 ? user.getProfileImage()
                 : "/images/default-profile.png";
     }
-
 
 }

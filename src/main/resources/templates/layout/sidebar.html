@@ -10,7 +10,12 @@
         <nav>
             <ul class="side_menu" th:if="${loggedInUser != null}">
                 <li><a href="/"><img src="/icon/logo/1.png" alt="홈"/><span>홈</span></a></li>
-                <li><a href="/"><img src="/icon/logo/2.png" alt="검색"/><span>검색</span></a></li>
+                <li>
+                    <a href="javascript:void(0);" class="search-toggle">
+                        <img src="/icon/logo/2.png" alt="검색"/>
+                        <span>검색</span>
+                    </a>
+                </li>
                 <li><a href="/"><img src="/icon/logo/3.png" alt="탐색탭"/><span>탐색탭</span></a></li>
                 <li><a href="/"><img src="/icon/logo/4.png" alt="릴스"/><span>릴스</span></a></li>
                 <li>
@@ -19,8 +24,6 @@
                         <span>메세지</span>
                     </a>
                 </li>
-
-
                 <li>
                     <a th:href="@{/notifications}" id="notification-bell" style="position: relative;">
                         <img src="/icon/logo/6.png" alt="알림"/>
@@ -29,10 +32,6 @@
                               th:classappend="${unreadCount > 0} ? '' : 'hidden'"></span>
                     </a>
                 </li>
-
-
-
-
                 <li>
 
                     <a href="javascript:void(0);" id="modalTrigger">
@@ -48,6 +47,7 @@
                         <span>프로필</span>
                     </a>
                 </li>
+
             </ul>
 
             <ul th:if="${loggedInUser == null}">

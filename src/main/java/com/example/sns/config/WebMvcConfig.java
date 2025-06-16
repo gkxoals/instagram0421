@@ -25,7 +25,7 @@ public class WebMvcConfig implements WebMvcConfigurer {
         });
     }
 
-    // 강의실
+    //강의실
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
         registry.addResourceHandler("/profile-images/**").addResourceLocations("file:///C:/Users/User/Desktop/sns_2/profileImage/");

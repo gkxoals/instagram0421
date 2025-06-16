@@ -8,11 +8,13 @@ import com.example.sns.User.entity.User;
 import com.example.sns.User.repository.UserRepository;
 import com.example.sns.UserProfiles.entity.Profile;
 import com.example.sns.UserProfiles.repository.ProfileRepository;
+import com.example.sns.exception.ResourceNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.security.Principal;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -101,7 +103,6 @@ UserService {
                 .collect(Collectors.toList());
     }
 
-    @Transactional
     private UserListDTO convertToUserListDTO(User user) {
         Profile profile = profileRepository.findByUserId(user).orElse(null);
 
@@ -122,5 +123,12 @@ UserService {
         );
     }
 
+    @Transactional
+    public User getCurrentUser(Principal principal) {
+        if (principal == null) return null;
+        String email = principal.getName(); // 기본적으로 email로 저장되어 있음
+        return userRepository.findByEmail(email)
+                .orElseThrow(() -> new ResourceNotFoundException("사용자를 찾을 수 없습니다."));
+    }
 
 }

@@ -1,19 +1,31 @@
 package com.example.sns.UserProfiles.controller;
 
+import com.example.sns.User.entity.User;
+import com.example.sns.User.service.UserService;
 import com.example.sns.UserProfiles.DTO.ProfileUpdateRequest;
+import com.example.sns.UserProfiles.DTO.UserProfileDTO;
 import com.example.sns.UserProfiles.Gender;
 import com.example.sns.UserProfiles.Service.ProfileService;
+import com.example.sns.UserProfiles.details.MyUserDetails;
+import com.example.sns.UserProfiles.entity.Profile;
 import com.example.sns.UserProfiles.repository.ProfileRepository;
 import com.example.sns.User.repository.UserRepository;
 import com.example.sns.config.Security.SecurityUtils;
+import com.example.sns.post.DTO.PostDTO;
+import com.example.sns.post.entity.Post;
+import com.example.sns.post.service.PostService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import java.security.Principal;
+import java.util.List;
 
 // 프로필 관련 요청을 처리하는 컨트롤러
 @Controller
@@ -23,13 +35,18 @@ public class ProfileController {
     private final ProfileService profileService;
     private final UserRepository userRepository;
     private final ProfileRepository profileRepository;
+    private final PostService postService;
+    private final UserService userService;
+
 
     // 생성자를 통한 의존성 주입
     @Autowired
-    public ProfileController(ProfileService profileService, UserRepository userRepository, ProfileRepository profileRepository) {
+    public ProfileController(ProfileService profileService, UserRepository userRepository, ProfileRepository profileRepository, PostService postService, UserService userService) {
         this.profileService = profileService;
         this.userRepository = userRepository;
         this.profileRepository = profileRepository;
+        this.postService = postService;
+        this.userService = userService;
     }
 
     // 프로필 페이지 요청 처리
@@ -40,8 +57,12 @@ public class ProfileController {
             return "redirect:/login";
         }
 
-        // ✅ 기존 프로필 정보도 유지
-        model.addAttribute("profile", profileService.getProfileWithUserId(userId));
+        Profile profile = profileService.getProfileWithUserId(userId);
+        List<PostDTO> posts = postService.getPostsByUserId(userId);  // ✅ 게시물 추가
+
+        model.addAttribute("profile", profile);
+        model.addAttribute("posts", posts);  // ✅ 여기에 반드시 추가해야 썸네일 뜸
+        model.addAttribute("isOwner", true); // ✅ 본인 프로필이므로 true 고정
 
         if (!error.isEmpty()) {
             model.addAttribute("error", error);
@@ -50,7 +71,21 @@ public class ProfileController {
         return "profiles/profile";
     }
 
+    @GetMapping("/profile-edit")
+    public String editProfile(Model model, Principal principal) {
+        String email = principal.getName();
 
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다."));
+
+        Profile profile = profileService.getProfileByUserId(user.getUserId());
+
+        model.addAttribute("profile", profile);
+        model.addAttribute("isOwner", true);
+
+        // 🔽 경로 정확히 수정!
+        return "profiles/profile-edit";
+    }
 
     // 프로필 업데이트 요청 처리
     @PostMapping("/update")
@@ -97,4 +132,21 @@ public class ProfileController {
             return ResponseEntity.internalServerError().body("프로필 사진 삭제 실패: " + e.getMessage());
         }
     }
+
+    @GetMapping("/{userId}")
+    public String viewProfile(@PathVariable Long userId, Model model, Principal principal) {
+        User currentUser = userService.getCurrentUser(principal);  // 로그인 유저
+        Profile profile = profileService.getProfileByUserId(userId);
+        List<PostDTO> posts = postService.getPostsByUserId(userId);  // ✅ 게시물 가져오기
+
+        model.addAttribute("profile", profile);
+        model.addAttribute("isOwner", currentUser.getUserId().equals(userId));
+        model.addAttribute("posts", posts); // ✅ 반드시 posts 넣어줘야 함
+
+
+        return "profiles/profile";
+    }
+
+
+
 }

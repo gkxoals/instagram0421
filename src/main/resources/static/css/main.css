@@ -133,6 +133,10 @@ body {
   .side_menu li a span {
     display: inline;
   }
+  .sidebar.force-compact {
+    width: 72px !important;
+    padding: 20px 0 !important;
+  }
 }
 
 @media (min-width: 768px) and (max-width: 1263px) {
@@ -148,6 +152,17 @@ body {
     width: 30px;
     height: 30px;
   }
+
+  .sidebar.force-compact {
+    width: 72px !important;
+    padding: 20px 0 !important;
+  }
+}
+
+
+.sidebar.force-compact {
+  width: 72px !important;
+  padding: 20px 0 !important;
 }
 
 @media (max-width: 767px) {
@@ -716,16 +731,6 @@ button:hover {
   cursor: pointer;
 }
 
-
-/* 알림 클릭 시 사이드바 강제 축소 */
-.sidebar.force-compact {
-  width: 72px !important;
-  padding: 20px 0 !important;
-}
-.sidebar.force-compact .side_menu a span,
-.sidebar.force-compact .more-menu-container a span {
-  display: none !important;
-}
 .sidebar.force-compact #logoImage {
   width: 30px;
   height: 30px;

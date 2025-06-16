@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>사용자 프로필</title>
+    <link rel="stylesheet" href="/css/Edit profile.css">
+    <link rel="stylesheet" href="/css/main.css">
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="/js/main.js"></script>
+    <script src="/js/profile.js"></script>
+</head>
+<body>
+
+<!-- ✅ 사이드바 -->
+<div th:replace="layout/sidebar :: sidebar"></div>
+
+<!-- ✅ 모바일 하단 네비게이션 -->
+<div th:replace="layout/mobile-nav :: mobile-nav"></div>
+
+<!-- ✅ 메인 콘텐츠 -->
+<main class="main-feed">
+    <div class="post profile-card">
+        <img id="profileImageElement"
+             th:src="${profile != null && profile.profileImage != null ? profile.profileImage : '/images/default-profile.png'}"
+             alt="프로필 이미지" class="profile-image">
+        <h2 class="nickname"
+            th:text="${profile != null && profile.nickname != null ? profile.nickname : '기본닉네임'}"></h2>
+        <p class="bio" th:text="${profile != null && profile.bio != null ? profile.bio : '소개글 없음'}"></p>
+        <p class="gender"
+           th:text="${profile != null && profile.gender != null ? '성별: ' + profile.gender : '성별 정보 없음'}"></p>
+        <p class="created-at"
+           th:text="${profile != null && profile.createdAt != null ? '가입일: ' + profile.createdAt : '가입일 정보 없음'}"></p>
+
+        <button id="deleteProfileImageButton">프로필 사진 삭제</button>
+
+        <div th:if="${error != null and error != ''}">
+            <script>
+                document.addEventListener("DOMContentLoaded", function () {
+                    alert("[[${error}]]");
+                });
+            </script>
+        </div>
+
+        <form action="/profile/update" method="post" id="profileForm" enctype="multipart/form-data"
+              onsubmit="return validateProfileImage()">
+            <div>
+                <label for="nickname">닉네임</label>
+                <input type="text" id="nickname" name="nickname" th:value="${profile.nickname}" maxlength="20" required>
+            </div>
+            <div>
+                <label for="bio">소개글</label>
+                <textarea id="bio" name="bio" th:text="${profile.bio}"
+                          maxlength="150" placeholder="최대 150자까지 입력 가능"></textarea>
+                <p id="bioCount">0 / 150</p>
+            </div>
+            <div>
+                <label for="gender">성별</label>
+                <select id="gender" name="gender">
+                    <option value="MALE">남성</option>
+                    <option value="FEMALE">여성</option>
+                </select>
+            </div>
+            <div>
+                <label for="profileImage">프로필 이미지</label>
+                <input type="file" id="profileImage" name="profileImage">
+            </div>
+            <button type="submit">프로필 업데이트</button>
+        </form>
+    </div>
+</main>
+<!-- ✅ 게시글 업로드 모달 -->
+<div th:replace="layout/uploadModal :: uploadModal"></div>
+
+
+</body>
+</html>
+
+ templates/profile/profile.html

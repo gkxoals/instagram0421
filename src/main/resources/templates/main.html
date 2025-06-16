@@ -6,15 +6,23 @@
     <link rel="icon" href="/icon/headLogo.png" type="image/x-icon">
     <title>Instagram Clone</title>
     <link rel="stylesheet" href="/css/main.css"/>
+    <link rel="stylesheet" href="/css/search.css"/>
     <script src="https://code.jquery.com/jquery-3.6.0.js"></script>
     <script src="/js/main.js"></script>
+    <script src="/js/search.js"></script>
 </head>
 <body>
-
+<!--사이드바-->
 <div th:replace="layout/sidebar :: sidebar"></div>
+
+<!--모바일 네비게이션-->
 <div th:replace="layout/mobile-nav :: mobile-nav"></div>
+
+<!--알림-->
 <div th:replace="layout/notifications :: notificationList"></div>
 
+<!--검색-->
+<div th:replace="layout/search-panel :: searchPanel"></div>
 
 <main class="main-feed">
     <div class="post-container">
@@ -40,7 +48,7 @@
                     <div class="carousel-slide"
                          th:each="media, iterStat : ${post.mediaList}"
                          th:classappend="${iterStat.index == 0} ? ' active-slide' : ''">
-                        <img th:if="${media.mediaType == 'IMAGE'}" th:src="${media.filePath}" />
+                        <img th:if="${media.mediaType == 'IMAGE'}" th:src="${media.filePath}"/>
                         <video th:if="${media.mediaType == 'VIDEO'}" th:src="${media.filePath}" controls></video>
                     </div>
                 </div>
@@ -55,8 +63,8 @@
                      th:if="${#lists.size(post.mediaList) > 1}"
                      th:attr="id='carousel-indicators-' + ${post.id}">
                     <span th:each="media, iterStat : ${post.mediaList}"
-                    th:attr="class=${iterStat.index == 0} ? 'active' : ''"
-                    th:attrappend="onclick='goToSlide(' + ${post.id} + ', ' + ${iterStat.index} + ')'"></span>
+                          th:attr="class=${iterStat.index == 0} ? 'active' : ''"
+                          th:attrappend="onclick='goToSlide(' + ${post.id} + ', ' + ${iterStat.index} + ')'"></span>
                 </div>
 
             </div>

@@ -1,0 +1,145 @@
+<div th:fragment="modal-content">
+    <div class="main-feed">
+        <div class="post-container">
+            <div class="post">
+
+                <div class="post-header">
+                    <div id="set">
+                        <img th:src="${post.profileImage}" alt="프로필 이미지" class="profile-img">
+                        <span th:text="${post.nickname}" style="font-weight: bold;"></span>
+                    </div>
+                    <div class="edit-delete" th:if="${loggedInUser != null and loggedInUser.userId == post.user.id}">
+                        <button><a th:href="@{/posts/edit/{id}(id=${post.id})}">수정</a></button>
+                        <form th:action="@{/posts/delete/{id}(id=${post.id})}" method="post" style="display:inline;">
+                            <button type="submit" onclick="return confirm('정말 삭제하시겠습니까?')">삭제</button>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- ✅ 캐러셀 -->
+                <div class="carousel-container">
+                    <div class="carousel-track" th:attr="id='carousel-track-' + ${post.id}">
+                        <div class="carousel-slide"
+                             th:each="media, iterStat : ${post.mediaList}"
+                             th:classappend="${iterStat.index == 0} ? ' active-slide' : ''">
+                            <img th:if="${media.mediaType == 'IMAGE'}" th:src="${media.filePath}" />
+                            <video th:if="${media.mediaType == 'VIDEO'}" th:src="${media.filePath}" controls></video>
+                        </div>
+                    </div>
+
+                    <div class="carousel-controls" th:if="${#lists.size(post.mediaList) > 1}">
+                        <button type="button" th:attr="onclick='moveSlide(-1, ' + ${post.id} + ')'">←</button>
+                        <button type="button" th:attr="onclick='moveSlide(1, ' + ${post.id} + ')'">→</button>
+                    </div>
+
+                    <div class="carousel-indicators"
+                         th:if="${#lists.size(post.mediaList) > 1}"
+                         th:attr="id='carousel-indicators-' + ${post.id}">
+                        <span th:each="media, iterStat : ${post.mediaList}"
+                              th:attr="class=${iterStat.index == 0} ? 'active' : ''"
+                              th:attrappend="onclick='goToSlide(' + ${post.id} + ', ' + ${iterStat.index} + ')'"></span>
+                    </div>
+                </div>
+
+
+                <p th:text="${post.content}"></p>
+                <p class="post-date" th:text="${#temporals.format(post.createdAt, 'yyyy.MM.dd HH:mm')}"></p>
+
+                <div class="post-actions">
+                    <div class="post-actions">
+                        <button th:id="'like-btn-' + ${post.id}"
+                                th:onclick="'likePost(' + ${post.id} + ')'">
+                            <span th:text="${post.likedByMe} ? '❤️' : '♡'">♡</span> 좋아요
+                        </button>
+                        <span th:id="'like-count-' + ${post.id}" th:text="${post.likeCount + '명'}">0명</span>
+                    </div>
+
+                    <div class="comments" th:if="${post != null and post.comments != null}">
+                        <div class="comment-list">
+
+                            <div th:each="comment : ${post.comments}" th:if="${comment.parentId == null}"
+                                 class="comment-item" th:id="'comment-' + ${comment.id}">
+                                <!-- ✅ 삭제 버튼과 내용을 같은 줄에 배치 -->
+                                <div class="comment-content-wrapper">
+                                    <div>
+                                        <span class="comment-username" th:text="${comment.nickname}"></span>:
+                                        <span th:text="${comment.content}"></span>
+                                    </div>
+
+                                    <div class="edit-delete"
+                                         th:if="${loggedInUser != null and
+                    (loggedInUser.userId == comment.userId or
+                     loggedInUser.userId == post.user.id)}">
+                                        <form th:action="@{/comment/delete/{id}(id=${comment.id})}" method="post"
+                                              style="display:inline;">
+                                            <button type="submit" onclick="return confirm('댓글을 삭제하시겠습니까?')">삭제</button>
+                                        </form>
+                                    </div>
+                                </div>
+
+                                <form action="/comment/reply" method="post" class="reply-form">
+
+                                    <input type="hidden" name="parentId" th:value="${comment.id}"/>
+
+                                    <div class="input-wrapper">
+                                        <input type="text" name="content" placeholder="답글 입력..." required/>
+                                        <button type="submit" class="inline-btn">답글</button>
+                                    </div>
+                                </form>
+
+                                <div class="reply reply-comment-list">
+                                    <div th:each="reply, iterStat : ${post.comments}"
+                                         th:if="${reply.parentId == comment.id}"
+                                         class="reply-item"
+                                         th:classappend="${iterStat.index > 0} ? ' hidden' : ''">
+
+                                        <div class="reply-content-wrapper">
+                                            <div>
+                                                <span class="comment-username" th:text="${reply.nickname}"></span>:
+                                                <span th:text="${reply.content}"></span>
+                                            </div>
+
+                                            <div class="edit-delete"
+                                                 th:if="${loggedInUser != null and
+              (loggedInUser.userId == reply.userId or
+               loggedInUser.userId == post.user.id)}">
+                                                <form th:action="@{/comment/delete/{id}(id=${reply.id})}" method="post"
+                                                      style="display:inline;">
+                                                    <button type="submit" onclick="return confirm('답글을 삭제하시겠습니까?')">삭제
+                                                    </button>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <button type="button" class="toggle-replies-btn"
+                                            onclick="toggleReplies(this)" data-expanded="false">
+                                        답글 더보기
+                                    </button>
+                                </div>
+
+                            </div>
+
+
+                            <th:block th:if="${#lists.size(post.comments) > 1}">
+                                <button type="button"
+                                        class="toggle-comments-btn"
+                                        onclick="toggleComments(this)"
+                                        th:attr="data-expanded=false">
+                                    [[${#lists.size(post.comments) - 1}]]개의 댓글 더보기
+                                </button>
+                            </th:block>
+                        </div>
+
+                        <form action="/comment/add" method="post">
+                            <input type="hidden" name="postId" th:value="${post.id}"/>
+                            <input type="text" name="content" placeholder="댓글 입력..." required/>
+                            <button type="submit">작성</button>
+                        </form>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>

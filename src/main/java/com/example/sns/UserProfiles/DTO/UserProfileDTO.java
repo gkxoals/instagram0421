@@ -13,4 +13,5 @@ public class UserProfileDTO {
     private String gender; // 성별
     private String email; // 이메일
     private String profileImage;
+    private int postCount;
 }
